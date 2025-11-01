@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Support Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            background: #2d2d44;
+            color: #e0e0e0;
+            border: 2px solid #3d3d5c;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .content-section {
+            display: none;
+            background: #1e1e2f;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #2d2d44;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3d3d5c;
+            background: #2d2d44;
+            color: #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #363654;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #888;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .priority-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .priority-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #3d3d5c;
+            background: #2d2d44;
+            color: #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .priority-option:hover {
+            border-color: #667eea;
+            background: #363654;
+        }
+
+        .priority-option.selected {
+            border-color: #ff5252;
+            background: #ffebee;
+        }
+
+        .priority-option.severe {
+            border-color: #ff5252;
+            background: #ff5252;
+            color: white;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+
+        .request-card {
+            background: #2d2d44;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            position: relative;
+            color: #e0e0e0;
+        }
+
+        .request-card.severe {
+            border-left-color: #ff5252;
+            background: #3d2d2d;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .request-id {
+            font-weight: 700;
+            color: #8b9cf8;
+            font-size: 18px;
+            background: #363654;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-raised {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-resolving {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .priority-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #ff5252;
+            color: white;
+        }
+
+        .request-content {
+            margin-top: 10px;
+        }
+
+        .request-meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #3d3d5c;
+            background: #2d2d44;
+            color: #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #363654;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            font-size: 1.5em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e1e2f;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid #2d2d44;
+            color: #e0e0e0;
+        }
+
+        .modal-content h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .issue-id-display {
+            background: #363654;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #8b9cf8;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .modal-btn:hover {
+            background: #5568d3;
+        }
+
+        .track-section {
+            background: #2d2d44;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #3d3d5c;
+        }
+
+        .track-section h3 {
+            color: #e0e0e0;
+        }
+
+        .track-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .track-input-group input {
+            flex: 1;
+        }
+
+        .track-btn {
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .track-btn:hover {
+            background: #45a049;
+        }
+
+        .error-msg {
+            color: #ff5252;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 IIIT Kalyani Support Portal</h1>
+            <p>Submit and track your requests</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('general')">General Issues</button>
+            <button class="tab-btn" onclick="switchTab('helpdesk')">Help Desk</button>
+            <button class="tab-btn" onclick="switchTab('track')">Track by Issue ID</button>
+        </div>
+
+        <!-- General Issues Section -->
+        <div id="general" class="content-section active">
+            <h2 class="section-title">Raise a General Issue</h2>
+            <form id="generalForm" onsubmit="submitGeneralRequest(event)">
+                <div class="form-group">
+                    <label for="gen-email">Your College Email *</label>
+                    <input type="email" id="gen-email" placeholder="yourname@iiitkalyani.ac.in" required>
+                </div>
+                <div class="form-group">
+                    <label for="gen-name">Your Name *</label>
+                    <input type="text" id="gen-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="gen-category">Issue Category *</label>
+                    <select id="gen-category" required>
+                        <option value="">Select Category</option>
+                        <option value="academic">Academic</option>
+                        <option value="administrative">Administrative</option>
+                        <option value="technical">Technical</option>
+                        <option value="facilities">Facilities</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gen-subject">Subject *</label>
+                    <input type="text" id="gen-subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="gen-description">Description *</label>
+                    <textarea id="gen-description" required></textarea>
+                </div>
+                <button type="submit">Submit Request</button>
+            </form>
+        </div>
+
+        <!-- Help Desk Section -->
+        <div id="helpdesk" class="content-section">
+            <h2 class="section-title">Help Desk - TA / Faculty / Administration</h2>
+            <form id="helpdeskForm" onsubmit="submitHelpDeskRequest(event)">
+                <div class="form-group">
+                    <label for="hd-email">Your College Email *</label>
+                    <input type="email" id="hd-email" placeholder="yourname@iiitkalyani.ac.in" required>
+                </div>
+                <div class="form-group">
+                    <label for="hd-name">Your Name *</label>
+                    <input type="text" id="hd-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="hd-department">Department *</label>
+                    <select id="hd-department" required>
+                        <option value="">Select Department</option>
+                        <option value="ta">Teaching Assistant (TA)</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="administration">Administration</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="hd-subject">Subject *</label>
+                    <input type="text" id="hd-subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="hd-description">Description *</label>
+                    <textarea id="hd-description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority Level *</label>
+                    <div class="priority-options">
+                        <div class="priority-option selected" onclick="selectPriority('normal')" id="priority-normal">
+                            <strong>Normal</strong>
+                            <div style="font-size: 12px; margin-top: 5px;">Standard priority</div>
+                        </div>
+                        <div class="priority-option severe" onclick="selectPriority('severe')" id="priority-severe">
+                            <strong>🚨 SEVERE</strong>
+                            <div style="font-size: 12px; margin-top: 5px;">High priority</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Submit Help Request</button>
+            </form>
+        </div>
+
+        <!-- Track Requests Section -->
+        <div id="track" class="content-section">
+            <h2 class="section-title">Track Your Issue</h2>
+            
+            <div class="track-section">
+                <h3 style="margin-bottom: 15px;">Enter Your Issue ID</h3>
+                <div class="track-input-group">
+                    <input type="text" id="trackIssueId" placeholder="e.g., IIITK-2024-001" />
+                    <button class="track-btn" onclick="trackIssue()">Track Issue</button>
+                </div>
+                <div id="trackError"></div>
+            </div>
+
+            <div id="trackedIssue"></div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h2>✅ Request Submitted Successfully!</h2>
+            <p style="margin: 15px 0;">Your issue has been registered. Please save this Issue ID for tracking:</p>
+            <div class="issue-id-display" id="displayIssueId"></div>
+            <p style="color: #666; margin: 10px 0;">An email notification has been sent to the administrator.</p>
+            <button class="modal-btn" onclick="closeModal()">Close</button>
+            <button class="modal-btn" onclick="goToTrack()">Track This Issue</button>
+        </div>
+    </div>
+
+    <script>
+        let requests = [];
+        let currentFilter = 'all';
+        let selectedPriority = 'normal';
+        let issueCounter = 1;
+
+        function generateIssueId() {
+            const year = new Date().getFullYear();
+            const id = String(issueCounter).padStart(3, '0');
+            issueCounter++;
+            return `IIITK-${year}-${id}`;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function selectPriority(priority) {
+            selectedPriority = priority;
+            document.querySelectorAll('.priority-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            if (priority === 'normal') {
+                document.getElementById('priority-normal').classList.add('selected');
+            } else {
+                document.getElementById('priority-severe').classList.add('selected');
+            }
+        }
+
+        function sendEmailNotification(request) {
+            const subject = `[${request.priority === 'severe' ? 'SEVERE' : 'New'}] Support Request: ${request.issueId}`;
+            const body = `
+New Support Request Received:
+
+Issue ID: ${request.issueId}
+Type: ${request.type === 'general' ? 'General Issue' : 'Help Desk'}
+Student Name: ${request.name}
+Student Email: ${request.email}
+${request.department ? `Department: ${request.department}` : ''}
+${request.category ? `Category: ${request.category}` : ''}
+Priority: ${request.priority.toUpperCase()}
+Subject: ${request.subject}
+
+Description:
+${request.description}
+
+Submitted on: ${request.date}
+
+---
+This is an automated notification from IIIT Kalyani Student Support Portal.
+Track this issue at: [Portal URL]/track with Issue ID: ${request.issueId}
+            `.trim();
+
+            const mailtoLink = `mailto:buntyjpr00i@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink, '_blank');
+        }
+
+        function showSuccessModal(issueId) {
+            document.getElementById('displayIssueId').textContent = issueId;
+            document.getElementById('successModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        function goToTrack() {
+            closeModal();
+            const issueId = document.getElementById('displayIssueId').textContent;
+            document.getElementById('trackIssueId').value = issueId;
+            switchTab('track');
+            trackIssue();
+        }
+
+        function submitGeneralRequest(e) {
+            e.preventDefault();
+            
+            const issueId = generateIssueId();
+            
+            const request = {
+                issueId: issueId,
+                type: 'general',
+                name: document.getElementById('gen-name').value,
+                email: document.getElementById('gen-email').value,
+                category: document.getElementById('gen-category').value,
+                subject: document.getElementById('gen-subject').value,
+                description: document.getElementById('gen-description').value,
+                status: 'raised',
+                priority: 'normal',
+                date: new Date().toLocaleString()
+            };
+
+            requests.push(request);
+            document.getElementById('generalForm').reset();
+            
+            sendEmailNotification(request);
+            showSuccessModal(issueId);
+        }
+
+        function submitHelpDeskRequest(e) {
+            e.preventDefault();
+            
+            const issueId = generateIssueId();
+            
+            const request = {
+                issueId: issueId,
+                type: 'helpdesk',
+                name: document.getElementById('hd-name').value,
+                email: document.getElementById('hd-email').value,
+                department: document.getElementById('hd-department').value,
+                subject: document.getElementById('hd-subject').value,
+                description: document.getElementById('hd-description').value,
+                status: 'raised',
+                priority: selectedPriority,
+                date: new Date().toLocaleString()
+            };
+
+            requests.push(request);
+            document.getElementById('helpdeskForm').reset();
+            selectedPriority = 'normal';
+            document.getElementById('priority-normal').classList.add('selected');
+            document.getElementById('priority-severe').classList.remove('selected');
+            
+            sendEmailNotification(request);
+            showSuccessModal(issueId);
+        }
+
+        function trackIssue() {
+            const issueId = document.getElementById('trackIssueId').value.trim();
+            const errorDiv = document.getElementById('trackError');
+            const resultDiv = document.getElementById('trackedIssue');
+
+            if (!issueId) {
+                errorDiv.innerHTML = '<div class="error-msg">Please enter an Issue ID</div>';
+                resultDiv.innerHTML = '';
+                return;
+            }
+
+            const request = requests.find(r => r.issueId === issueId);
+
+            if (!request) {
+                errorDiv.innerHTML = '<div class="error-msg">Issue ID not found. Please check and try again.</div>';
+                resultDiv.innerHTML = '';
+                return;
+            }
+
+            errorDiv.innerHTML = '';
+            resultDiv.innerHTML = `
+                <div class="request-card ${request.priority === 'severe' ? 'severe' : ''}" style="margin-top: 20px;">
+                    <div class="request-header">
+                        <span class="request-id">${request.issueId}</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            ${request.priority === 'severe' ? '<span class="priority-badge">SEVERE</span>' : ''}
+                            <span class="status-badge status-${request.status}">${request.status}</span>
+                        </div>
+                    </div>
+                    <div class="request-content">
+                        <strong>${request.subject}</strong>
+                        <p style="margin-top: 8px; color: #666;">${request.description}</p>
+                        ${request.department ? `<p style="margin-top: 8px;"><strong>Department:</strong> ${request.department}</p>` : ''}
+                        ${request.category ? `<p><strong>Category:</strong> ${request.category}</p>` : ''}
+                        <p style="margin-top: 8px;"><strong>Name:</strong> ${request.name}</p>
+                        <p><strong>Email:</strong> ${request.email}</p>
+                    </div>
+                    <div class="request-meta">
+                        Submitted on: ${request.date}
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <strong>Status Timeline:</strong>
+                        <div style="margin-top: 10px; padding: 15px; background: white; border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="width: 20px; height: 20px; background: ${request.status === 'raised' || request.status === 'resolving' || request.status === 'resolved' ? '#4CAF50' : '#ddd'}; border-radius: 50%;"></span>
+                                <span style="font-weight: ${request.status === 'raised' ? '700' : '400'};">Raised</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="width: 20px; height: 20px; background: ${request.status === 'resolving' || request.status === 'resolved' ? '#4CAF50' : '#ddd'}; border-radius: 50%;"></span>
+                                <span style="font-weight: ${request.status === 'resolving' ? '700' : '400'};">Resolving</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="width: 20px; height: 20px; background: ${request.status === 'resolved' ? '#4CAF50' : '#ddd'}; border-radius: 50%;"></span>
+                                <span style="font-weight: ${request.status === 'resolved' ? '700' : '400'};">Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
